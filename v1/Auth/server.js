@@ -14,6 +14,7 @@ import mongoose from 'mongoose';
 
 import studentAuthRouter from './Router/studentAuthRouter.js';
 import localAdminAuthRouter from './Router/localAdminAuthRouter.js';
+import teacherAuthRouter from './Router/teacherAuthRouter.js';
 import logger from './utils/logger.js';
 
 dotenv.config();
@@ -82,7 +83,7 @@ if (cluster.isPrimary && process.env.NODE_ENV === 'production') {
 
   // Routes
   app.use('/students', studentAuthRouter);
-  // app.use('/teachers', teacherAuthRouter);
+  app.use('/teachers', teacherAuthRouter);
   // app.use('/mentors', mentorAuthRouter);
   app.use('/localAdmins', localAdminAuthRouter);
   // app.use('/globalAdmins', schoolAdminAuthRouter);

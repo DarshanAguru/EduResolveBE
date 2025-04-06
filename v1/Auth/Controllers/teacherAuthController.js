@@ -1,4 +1,4 @@
-import { LocalAdmins } from '../DataBase/LocalAdmin.js'
+import { Teachers } from '../../../../server/Database/Teachers.js'
 import { VerificationTag } from '../Database/VerificationTag.js'
 import jwt from 'jsonwebtoken'
 import { hashPassword, verifyPass } from '../utils/verifyPass.js'
@@ -13,18 +13,18 @@ dotenv.config()
 export const login = async (req, res) => {
   const { phoneNumber, password } = req.body // taking post parameters from request
   try {
-    const localAdmin = await LocalAdmins.findOne({ phoneNumber }) // getting the localAdmin details
-    if (!localAdmin) {
+    const teacher = await Teachers.findOne({ phoneNumber }) // getting the teacher details
+    if (!teacher) {
         logger.info('Admin not found:', phoneNumber);
-      return res.status(404).send({ message: 'Admin Not Found' }) // localAdmin not found
+      return res.status(404).send({ message: 'Admin Not Found' }) // teacher not found
     }
 
     // if incorrect credentials
-    if (!localAdmin.password || localAdmin.password.trim() === '') {
+    if (!teacher.password || teacher.password.trim() === '') {
       return res.status(401).send({ message: 'Not authorized' })
     }
 
-    if (!( await verifyPass(password, localAdmin.password))) { 
+    if (!( await verifyPass(password, teacher.password))) { 
       return res.status(401).send({ message: 'Not authorized' })
     }
 
@@ -32,7 +32,7 @@ export const login = async (req, res) => {
 
     // jwt token generation
     const token = jwt.sign(
-      { userType: 'LocalAdmins', userId: localAdmin._id },
+      { userType: 'Teachers', userId: teacher._id },
       process.env.JWT_SECRET_KEY,
       {
         expiresIn: expTime,
@@ -43,9 +43,9 @@ export const login = async (req, res) => {
     res.setHeader('Authorization', 'Bearer '+ token) // setting the token in the header
 
     const tag = await VerificationTag.findOneAndUpdate(
-      { userId: localAdmin._id },
+      { userId: teacher._id },
       {
-        userType: 'LocalAdmins',
+        userType: 'Teachers',
         token
       },
       { upsert: true, new: true }
@@ -56,15 +56,15 @@ export const login = async (req, res) => {
     }
 
     const dataToSend = {
-      ...localAdmin._doc,
+      ...teacher._doc,
       password: undefined,
       created_at: undefined,
       updated_at: undefined,
       __v: undefined,
     }
 
-    logger.info('verified localAdmin and verification tag created');
-    res.status(200).send(dataToSend) // retuning localAdmin details
+    logger.info('verified teacher and verification tag created');
+    res.status(200).send(dataToSend) // retuning teacher details
   } catch (err) {
     logger.error('Error in login:', err);
     res.status(500).send({ message: 'Internal Server Error' }) // Not authorized
@@ -72,24 +72,24 @@ export const login = async (req, res) => {
 }
 
 export const register = async (req, res) => {
-  const { phoneNumber, name, emailId, institution, password, age, gender, description, designation } = req.body
-   const hashedPassword = await hashPassword(password)
- 
-   try {
-     const newLocalAdmin = new LocalAdmins({
-       phoneNumber,
-       name,
-       emailId,
-       age,
-       gender,
-       password: hashedPassword,
-       description,
-       designation,
-       institution
-     })
- 
-     await newLocalAdmin.save();
-     logger.info('New localAdmin registered:', phoneNumber);  
+  const { phoneNumber, name, emailId, institution, password, age, gender, qualification, subjectExpertise } = req.body
+    const hashedPassword = await hashPassword(password)
+  
+    try {
+      const newTeacher = new Teachers({
+        phoneNumber,
+        name,
+        emailId,
+        age,
+        gender,
+        institution,
+        password: hashedPassword,
+        qualification,
+        subjectExpertise
+      })
+  
+      await newTeacher.save()
+     logger.info('New teacher registered:', phoneNumber);  
     res.status(201).send({ message: 'Registered' })
   } catch (err) {
     logger.error('Error in registration:', err);
@@ -102,11 +102,11 @@ export const forgotPassword = async (req, res) => {
   const query = req.body.query
   const email = req.body.email
   const phoneNo = req.body.phoneNo
-  const type = 'localAdmin'
+  const type = 'teacher'
   try {
     let data
     if (query === 'generateOTP') {
-        data = await LocalAdmins.findOne({ phoneNumber: phoneNo, emailId: email })
+        data = await Teachers.findOne({ phoneNumber: phoneNo, emailId: email })
     
 
       if (!data || (data === null)) {
@@ -161,7 +161,7 @@ export const forgotPassword = async (req, res) => {
       }
       await ForgotPassword.deleteOne({ _id: passData._id })
 
-      data = await LocalAdmins.findOneAndUpdate({ _id: userId }, { password: hashedPassword })
+      data = await Teachers.findOneAndUpdate({ _id: userId }, { password: hashedPassword })
       
 
       if (!data || data === null) {
@@ -180,21 +180,20 @@ export const forgotPassword = async (req, res) => {
   }
 }
 
-
 export const logout = async (req, res) => {
-  try{
-      const id = req.params.id
-      res.header['Authorization'] = '' // removing the token from the header
-      const data = await VerificationTag.findOneAndDelete({ userId: id }) // removing token from the verificationTag DB
-          if (!data) {
-            return res.status(404).send({ message: 'Not Found' })
-          }
-          logger.info('Logged out successfully');
-          res.status(200).send({ message: 'Logged out Successfully!' })
-  }
-  catch(err)
-  {
-      logger.error('Error in logout:', err);
-      return res.status(500).send({ message: 'Internal Server Error' })
-  }
+    try{
+        const id = req.params.id
+        res.header['Authorization'] = '' // removing the token from the header
+        const data = await VerificationTag.findOneAndDelete({ userId: id }) // removing token from the verificationTag DB
+            if (!data) {
+              return res.status(404).send({ message: 'Not Found' })
+            }
+            logger.info('Logged out successfully');
+            res.status(200).send({ message: 'Logged out Successfully!' })
+    }
+    catch(err)
+    {
+        logger.error('Error in logout:', err);
+        return res.status(500).send({ message: 'Internal Server Error' })
+    }
 }

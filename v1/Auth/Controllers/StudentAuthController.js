@@ -175,3 +175,22 @@ export const forgotPassword = async (req, res) => {
     return res.status(500).send({ message: 'Internal Server Error' })
   }
 }
+
+
+export const logout = async (req, res) => {
+    try{
+        const id = req.params.id
+        res.header['Authorization'] = '' // removing the token from the header
+        const data = await VerificationTag.findOneAndDelete({ userId: id }) // removing token from the verificationTag DB
+            if (!data) {
+              return res.status(404).send({ message: 'Not Found' })
+            }
+            logger.info('Logged out successfully');
+            res.status(200).send({ message: 'Logged out Successfully!' })
+    }
+    catch(err)
+    {
+        logger.error('Error in logout:', err);
+        return res.status(500).send({ message: 'Internal Server Error' })
+    }
+}

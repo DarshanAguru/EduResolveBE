@@ -1,0 +1,5 @@
+{
+    "localAdmin": {
+        "getAllAdmins": ["GET"] 
+    }
+}

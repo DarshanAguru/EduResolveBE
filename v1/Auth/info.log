@@ -12,3 +12,11 @@
 {"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-06T16:06:08.750Z"}
 {"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-06T16:06:08.814Z"}
 {"level":"info","message":"Student not found:","service":"user-service","timestamp":"2025-04-06T16:06:10.307Z"}
+{"level":"info","message":"Running in production mode with clustering","service":"user-service","timestamp":"2025-04-07T16:35:57.922Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-07T16:36:00.231Z"}
+{"level":"error","message":"MongoDB connection failed mentorAuthRouter is not defined","service":"user-service","stack":"ReferenceError: mentorAuthRouter is not defined\n    at file:///D:/Darshan%20imp%20docs/My%20Projects/Resume%20Projs/1.%20eduResolve/Servers/v1/Auth/server.js:88:23\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2025-04-07T16:36:00.240Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-07T16:36:00.287Z"}
+{"level":"error","message":"MongoDB connection failed mentorAuthRouter is not defined","service":"user-service","stack":"ReferenceError: mentorAuthRouter is not defined\n    at file:///D:/Darshan%20imp%20docs/My%20Projects/Resume%20Projs/1.%20eduResolve/Servers/v1/Auth/server.js:88:23\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)","timestamp":"2025-04-07T16:36:00.295Z"}
+{"level":"info","message":"Running in production mode with clustering","service":"user-service","timestamp":"2025-04-07T16:38:14.643Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-07T16:38:17.380Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-07T16:38:17.380Z"}

@@ -1,17 +1,17 @@
 {
     "localAdmin": {
-        "/localAdmins/logout/:id": ["POST"] 
+        "/localAdmins/me": ["POST"] 
     },
     "teacher": {
-        "/teachers/logout/:id": ["POST"]
+        "/teachers/me": ["POST"]
     },
     "student": {
-        "/students/logout/:id": ["POST"]
+        "/students/me": ["POST"]
     },
     "globalAdmin": {
-        "/globalAdmins/logout/:id": ["POST"]
+        "/globalAdmins/me": ["POST"]
     },
     "mentor": {
-        "/mentors/logout/:id": ["POST"]
+        "/mentors/me": ["POST"]
     }
 }

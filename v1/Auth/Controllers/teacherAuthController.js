@@ -1,199 +1,57 @@
 import { Teachers } from '../../../../server/Database/Teachers.js'
-import { VerificationTag } from '../Database/VerificationTag.js'
-import jwt from 'jsonwebtoken'
-import { hashPassword, verifyPass } from '../utils/verifyPass.js'
-import dotenv from 'dotenv'
+import { Users } from '../DataBase/Users.js'
 import logger from '../utils/logger.js'
-import { ForgotPassword } from '../DataBase/ForgotPassword.js'
-import { generate } from 'otp-generator'
-import nodemailer from 'nodemailer'
 
-dotenv.config()
 
-export const login = async (req, res) => {
-  const { phoneNumber, password } = req.body // taking post parameters from request
+export const getMe = async (req, res) => {
   try {
-    const teacher = await Teachers.findOne({ phoneNumber }) // getting the teacher details
-    if (!teacher) {
-        logger.info('Admin not found:', phoneNumber);
-      return res.status(404).send({ message: 'Admin Not Found' }) // teacher not found
-    }
-
-    // if incorrect credentials
-    if (!teacher.password || teacher.password.trim() === '') {
-      return res.status(401).send({ message: 'Not authorized' })
-    }
-
-    if (!( await verifyPass(password, teacher.password))) { 
-      return res.status(401).send({ message: 'Not authorized' })
-    }
-
-    const expTime = 60 * 60 * 24 // expiration time in seconds (1 day)
-
-    // jwt token generation
-    const token = jwt.sign(
-      { userType: 'Teachers', userId: teacher._id },
-      process.env.JWT_SECRET_KEY,
-      {
-        expiresIn: expTime,
-        algorithm: 'HS256'
+    const id = req.user?.cognitoSub // getting the user id from the token
+    const user = await Users.findOne({cognitoSub: id}).populate('profileRef');
+    if(!user) {
+      return res.status(404).send({ message: 'User not found' });
       }
-    )
-
-    res.setHeader('Authorization', 'Bearer '+ token) // setting the token in the header
-
-    const tag = await VerificationTag.findOneAndUpdate(
-      { userId: teacher._id },
-      {
-        userType: 'Teachers',
-        token
-      },
-      { upsert: true, new: true }
-    )
-
-    if (!tag) {
-      throw new Error('Failed to create verification tag');
-    }
 
     const dataToSend = {
-      ...teacher._doc,
-      password: undefined,
+      ...user._doc,
       created_at: undefined,
       updated_at: undefined,
       __v: undefined,
-    }
-
-    logger.info('verified teacher and verification tag created');
-    res.status(200).send(dataToSend) // retuning teacher details
+    };
+    res.status(200).send(dataToSend);
   } catch (err) {
-    logger.error('Error in login:', err);
-    res.status(500).send({ message: 'Internal Server Error' }) // Not authorized
+    logger.error("Error in getting user:", err);
+    res.status(500).send({ message: 'Internal Server Error' });
   }
+     
 }
 
 export const register = async (req, res) => {
-  const { phoneNumber, name, emailId, institution, password, age, gender, qualification, subjectExpertise } = req.body
-    const hashedPassword = await hashPassword(password)
-  
+  const { phoneNumber, name, emailId, institution, age, gender, qualification, subjectExpertise , cognitoSub} = req.body
+
     try {
       const newTeacher = new Teachers({
-        phoneNumber,
-        name,
-        emailId,
         age,
         gender,
         institution,
-        password: hashedPassword,
         qualification,
         subjectExpertise
       })
   
-      await newTeacher.save()
-     logger.info('New teacher registered:', phoneNumber);  
-    res.status(201).send({ message: 'Registered' })
+      await newTeacher.save();
+
+      const user = new Users({
+        cognitoSub,
+        phoneNumber,
+        name,
+        emailId,
+        role: "teacher",
+        profileRef: newTeacher._id,
+      });
+      await user.save();
+    res.status(201).send({ message: 'Registered Successfully' })
   } catch (err) {
     logger.error('Error in registration:', err);
     res.status(500).send({ message: 'Internal Server Error' }) // Internal Server Error
   }
 }
 
-
-export const forgotPassword = async (req, res) => {
-  const query = req.body.query
-  const email = req.body.email
-  const phoneNo = req.body.phoneNo
-  const type = 'teacher'
-  try {
-    let data
-    if (query === 'generateOTP') {
-        data = await Teachers.findOne({ phoneNumber: phoneNo, emailId: email })
-    
-
-      if (!data || (data === null)) {
-        return res.status(404).send({ message: 'Data Not Found' })
-      }
-
-      const otp = generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false })
-
-      const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.USER_EMAIL,
-          pass: process.env.APP_PASS
-        }
-      })
-
-      const mailOptions = {
-        from: process.env.USER_MAIL,
-        to: email,
-        subject: 'EDU RESOLVE password reset OTP!',
-        text: `Dear User,\nYour OTP for the EDU RESOLVE account reset password is ${otp}.\nIt is valid for 3 minutes, please don't share.\nWarm Regards,\nEDU RESOLVE team.`
-      }
-
-      const response = await transporter.sendMail(mailOptions)
-      if (!response) {
-        return res.status(500).send({ message: 'Internal Server Error' })
-      }
-
-       
-
-      const passwordData = await ForgotPassword.findOneAndUpdate({ userId: data._id }, { emailId: data.emailId, type, otp }, { upsert: true, new: true })
-
-      if (!passwordData) {
-        return res.status(500).send({ message: 'Internal Server Error' })
-      }
-      logger.info('OTP sent successfully');
-      return res.status(200).send({ message: 'OTP sent', userId: data._id })
-    } else if (query === 'verifyOTP&Reset') {
-      const otp = req.body.otp
-      const password = req.body.password
-      const userId = req.body.userId
-      const hashedPassword = await hashPassword(password)
-      const passData = await ForgotPassword.findOne({ userId })
-      if (!passData) {
-        return res.status(404).send({ message: 'Not Found' })
-      }
-      if (otp !== passData.otp) {
-        return res.status(401).send({ message: 'Invalid OTP' })
-      }
-      await ForgotPassword.deleteOne({ _id: passData._id })
-
-      data = await Teachers.findOneAndUpdate({ _id: userId }, { password: hashedPassword })
-      
-
-      if (!data || data === null) {
-        return res.status(404).send({ message: 'Data Not Found' })
-      }
-      logger.info('Password reset successfully for user:', data._id);
-
-      return res.status(200).send({ message: 'verified And Reset' })
-    } else {
-      logger.error('Invalid query parameter:', query);
-      return res.status(500).send({ message: 'Internal Server Error' })
-    }
-  } catch (e) {
-    logger.error('Error in forgot password:', e);
-    return res.status(500).send({ message: 'Internal Server Error' })
-  }
-}
-
-export const logout = async (req, res) => {
-    try{
-        const id = req.params.id
-        res.header['Authorization'] = '' // removing the token from the header
-        const data = await VerificationTag.findOneAndDelete({ userId: id }) // removing token from the verificationTag DB
-            if (!data) {
-              return res.status(404).send({ message: 'Not Found' })
-            }
-            logger.info('Logged out successfully');
-            res.status(200).send({ message: 'Logged out Successfully!' })
-    }
-    catch(err)
-    {
-        logger.error('Error in logout:', err);
-        return res.status(500).send({ message: 'Internal Server Error' })
-    }
-}

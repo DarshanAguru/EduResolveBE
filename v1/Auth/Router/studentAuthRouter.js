@@ -1,16 +1,12 @@
 import express from 'express'
-import { login, register, forgotPassword, logout} from '../Controllers/studentAuthController.js'
-import { verifyToken } from '../utils/jwtVerify.js'
+import { register,  getMe} from '../Controllers/studentAuthController.js'
+import { jwtMiddleWare } from '../utils/jwtMiddleWare.js'
 
 const studentAuthRouter = express.Router()
-// login and Register
-studentAuthRouter.post('/login', login)
+// Register
 studentAuthRouter.put('/register', register)
 
-// forgot password
-studentAuthRouter.post('/forgotPassword', forgotPassword)
-
-// logout with JWT token
-studentAuthRouter.post('/logout/:id', verifyToken, logout)
+// Get user with JWT token
+studentAuthRouter.post('/me', jwtMiddleWare, getMe)
 
 export default studentAuthRouter

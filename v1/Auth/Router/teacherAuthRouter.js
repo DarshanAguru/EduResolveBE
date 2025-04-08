@@ -1,15 +1,12 @@
 import express from 'express'
-import { login, register, forgotPassword, logout } from '../Controllers/teacherAuthController.js'
-import { verifyToken } from '../utils/jwtVerify.js'
+import { register, getMe } from '../Controllers/teacherAuthController.js'
+import { jwtMiddleWare } from '../utils/jwtMiddleWare.js'
 const teacherAuthRouter = express.Router()
-// login and Register
-teacherAuthRouter.post('/login', login)
+
+// Register 
 teacherAuthRouter.put('/register', register)
 
-// forgot password
-teacherAuthRouter.post('/forgotPassword', forgotPassword)
-
-//logout with JWT token
-teacherAuthRouter.post('/logout/:id',verifyToken, logout)
+//Get user with JWT token
+teacherAuthRouter.post('/me',jwtMiddleWare, getMe)
 
 export default teacherAuthRouter

@@ -1,17 +1,12 @@
 import express from 'express'
-import { login, register, forgotPassword, logout} from '../Controllers/localAdminAuthController.js'
-import { verifyToken } from '../utils/jwtVerify.js'
+import { register, getMe} from '../Controllers/localAdminAuthController.js'
+import { jwtMiddleWare } from '../utils/jwtMiddleWare.js'
 
 const localAdminAuthRouter = express.Router()
-// login and Register
-localAdminAuthRouter.post('/login', login)
+// Register
 localAdminAuthRouter.put('/register', register)
 
-
-// forgot password
-localAdminAuthRouter.post('/forgotPassword', forgotPassword)
-
-// logout with JWT token
-localAdminAuthRouter.post('/logout/:id', verifyToken, logout)
+// Get user with JWT token
+localAdminAuthRouter.post('/me', jwtMiddleWare, getMe)
 
 export default localAdminAuthRouter

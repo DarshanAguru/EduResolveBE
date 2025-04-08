@@ -12,26 +12,15 @@ const NotificationSchema = new Schema({
 })
 
 const TeachersSchema = new Schema({
-  phoneNumber: { type: String, required: true, unique: true },
-  name: { type: String, required: true },
-  emailId: { type: String, required: true },
   subjectExpertise: { type: [String], required: true },
   institution: { type: String, required: true },
   age: { type: Number },
   gender: { type: String },
-  password: { type: String, required: true },
   verificationStatus: { type: String, default: 'pending' },
   qualification: { type: String },
   assignments: { type: [String] },
   messages: { type: [String] },
   notifications: { type: [NotificationSchema] }
-
-},
-{
-  timestamps: {
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-  }
-})
+});
 
 export const Teachers = model('Teachers', TeachersSchema)

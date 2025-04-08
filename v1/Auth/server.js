@@ -11,11 +11,13 @@ import {
 import cluster from 'cluster';
 import os from 'node:os';
 import mongoose from 'mongoose';
-
+import cookieParser from 'cookie-parser';
 import studentAuthRouter from './Router/studentAuthRouter.js';
 import localAdminAuthRouter from './Router/localAdminAuthRouter.js';
 import teacherAuthRouter from './Router/teacherAuthRouter.js';
 import logger from './utils/logger.js';
+import globalAdminAuthRouter from './Router/globalAdminAuthRouter.js';
+import mentorAuthRouter from './Router/mentorAuthRouter.js';
 
 dotenv.config();
 
@@ -55,6 +57,7 @@ if (cluster.isPrimary && process.env.NODE_ENV === 'production') {
   const app = express(); 
 
   // middlewares
+  app.use(cookieParser());
   app.use(morgan('dev')); // dev environment logging
   app.use(express.json()); // parse JSON bodies
   app.use(helmet()); // secure headers
@@ -84,9 +87,9 @@ if (cluster.isPrimary && process.env.NODE_ENV === 'production') {
   // Routes
   app.use('/students', studentAuthRouter);
   app.use('/teachers', teacherAuthRouter);
-  // app.use('/mentors', mentorAuthRouter);
+  app.use('/mentors', mentorAuthRouter);
   app.use('/localAdmins', localAdminAuthRouter);
-  // app.use('/globalAdmins', schoolAdminAuthRouter);
+  app.use('/globalAdmins', globalAdminAuthRouter);
 
   app.get('/healthCheck/checkHealthOfServer', (req, res) => {
     res.status(200).json({ message: 'Auth Server is up and running' });

@@ -15,23 +15,13 @@ const NotificationSchema = new Schema(
 
 const StudentSchema = new Schema(
   {
-    phoneNumber: { type: String, required: true, unique: true, index: true },
-    name: { type: String, required: true },
-    emailId: { type: String },
     grade: { type: String, required: true },
     school: { type: String, required: true },
     age: { type: String },
     gender: { type: String },
-    password: { type: String, required: true },
     assignments: { type: [String] },
     messages: { type: [String] },
     notifications: { type: [NotificationSchema] }
-  },
-  {
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
-    }
   }
 )
 

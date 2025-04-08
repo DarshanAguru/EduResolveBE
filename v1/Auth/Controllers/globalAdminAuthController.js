@@ -1,6 +1,7 @@
-import { LocalAdmins } from '../DataBase/LocalAdmins.js'
+import { GlobalAdmins } from '../DataBase/GlobalAdmins.js'
 import logger from '../utils/logger.js'
 import { Users } from '../DataBase/Users.js'
+
 
 export const getMe = async (req, res) => {
   try {
@@ -24,25 +25,24 @@ export const getMe = async (req, res) => {
 }
 
 export const register = async (req, res) => {
-  const { phoneNumber, name, emailId, institution, age, gender, description, designation, cognitoSub } = req.body
+ const { phoneNumber, name, emailId, age, gender, cognitoSub } = req.body
+ 
    try {
-     const newLocalAdmin = new LocalAdmins({
+     const newGlobalAdmin = new GlobalAdmins({
        age,
        gender,
-       description,
-       designation,
-       institution
      })
  
-     await newLocalAdmin.save();
+     await newGlobalAdmin.save()
+ 
 
     const user = new Users({
       cognitoSub,
       phoneNumber,
       name,
       emailId,
-      role: "localAdmin",
-      profileRef: newLocalAdmin._id,
+      role: "globalAdmin",
+      profileRef: newGlobalAdmin._id,
     })
     await user.save();
     res.status(201).send({ message: 'Registered' })

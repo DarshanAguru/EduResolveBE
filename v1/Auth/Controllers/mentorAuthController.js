@@ -1,26 +1,8 @@
-import { Students } from '../Database/Students.js'
+
 import logger from '../utils/logger.js'
 import { Users } from '../DataBase/Users.js';
+import { Mentors } from '../DataBase/Mentors.js';
 
-
-export const storeToken = async (req, res) =>{
-  try{
-    const { token } = req.body;
-
-    res.cookie('authToken', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'Strict',
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-    }
-    );
-    res.status(200).send({ message: 'Token stored successfully' });
-  }
-  catch(err){
-    logger.error("Error in storing token:", err);
-    res.status(500).send({ message: 'Internal Server Error' });
-  }
-}
 
 export const getMe = async (req, res) => {
     try{
@@ -46,24 +28,28 @@ export const getMe = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { name, phoneNumber, emailId, grade, school, age, gender, cognitoSub } = req.body;
-
-    const newStudent = new Students({
-      grade,
-      school,
-      age,
-      gender
-    });
-    
-    await newStudent.save();
+   const { phoneNumber, name, emailId, age, gender, description, subjectExpertise, qualification, resumeLink, institution, cognitoSub } = req.body
+       
+   const newMentor = new Mentors({
+         age,
+         gender,
+         password: hashedPassword,
+         description,
+         subjectExpertise,
+         resumeLink,
+         qualification,
+         institution
+       })
+   
+       await newMentor.save()
 
     const user = new Users({
       cognitoSub,
       phoneNumber,
       name,
       emailId,
-      role: "student",
-      profileRef: newStudent._id,
+      role: "mentor",
+      profileRef: newMentor._id,
     });
 
     await user.save();

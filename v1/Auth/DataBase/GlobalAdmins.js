@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose'
 
 const GlobalAdminsSchema = new Schema({
-  age: { type: Number },
+  birthdate: { type: String },
   gender: { type: String },
 })
 

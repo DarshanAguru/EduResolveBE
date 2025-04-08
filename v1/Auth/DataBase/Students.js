@@ -17,7 +17,7 @@ const StudentSchema = new Schema(
   {
     grade: { type: String, required: true },
     school: { type: String, required: true },
-    age: { type: String },
+    birthdate: { type: String },
     gender: { type: String },
     assignments: { type: [String] },
     messages: { type: [String] },

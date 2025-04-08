@@ -31,6 +31,7 @@ export const getMe = async (req, res) => {
       }
       const dataToSend = {
         ...user._doc,
+        profileRef: {...user.profileRef._doc, notifications: undefined, assignments: undefined, messages: undefined },
         created_at: undefined,
         updated_at: undefined,
         __v: undefined,
@@ -46,12 +47,12 @@ export const getMe = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-    const { name, phoneNumber, emailId, grade, school, age, gender, cognitoSub } = req.body;
+    const { name, phoneNumber, emailId, grade, school, birthdate, gender, cognitoSub } = req.body;
 
     const newStudent = new Students({
       grade,
       school,
-      age,
+      birthdate,
       gender
     });
     

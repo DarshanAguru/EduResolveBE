@@ -24,10 +24,10 @@ export const getMe = async (req, res) => {
 }
 
 export const register = async (req, res) => {
-  const { phoneNumber, name, emailId, institution, age, gender, description, designation, cognitoSub } = req.body
+  const { phoneNumber, name, emailId, institution, birthdate, gender, description, designation, cognitoSub } = req.body
    try {
      const newLocalAdmin = new LocalAdmins({
-       age,
+       birthdate,
        gender,
        description,
        designation,

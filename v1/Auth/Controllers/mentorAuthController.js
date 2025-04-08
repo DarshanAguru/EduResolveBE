@@ -28,10 +28,10 @@ export const getMe = async (req, res) => {
 
 export const register = async (req, res) => {
   try {
-   const { phoneNumber, name, emailId, age, gender, description, subjectExpertise, qualification, resumeLink, institution, cognitoSub } = req.body
+   const { phoneNumber, name, emailId, birthdate, gender, description, subjectExpertise, qualification, resumeLink, institution, cognitoSub } = req.body
        
    const newMentor = new Mentors({
-         age,
+         birthdate,
          gender,
          password: hashedPassword,
          description,

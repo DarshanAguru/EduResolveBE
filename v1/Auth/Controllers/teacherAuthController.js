@@ -13,6 +13,7 @@ export const getMe = async (req, res) => {
 
     const dataToSend = {
       ...user._doc,
+      profileRef: {...user.profileRef._doc, notifications: undefined, assignments: undefined, messages: undefined, verificationStatus: undefined },
       created_at: undefined,
       updated_at: undefined,
       __v: undefined,
@@ -26,11 +27,11 @@ export const getMe = async (req, res) => {
 }
 
 export const register = async (req, res) => {
-  const { phoneNumber, name, emailId, institution, age, gender, qualification, subjectExpertise , cognitoSub} = req.body
+  const { phoneNumber, name, emailId, institution, birthdate, gender, qualification, subjectExpertise , cognitoSub} = req.body
 
     try {
       const newTeacher = new Teachers({
-        age,
+        birthdate,
         gender,
         institution,
         qualification,

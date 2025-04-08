@@ -25,11 +25,11 @@ export const getMe = async (req, res) => {
 }
 
 export const register = async (req, res) => {
- const { phoneNumber, name, emailId, age, gender, cognitoSub } = req.body
+ const { phoneNumber, name, emailId, birthdate, gender, cognitoSub } = req.body
  
    try {
      const newGlobalAdmin = new GlobalAdmins({
-       age,
+       birthdate,
        gender,
      })
  

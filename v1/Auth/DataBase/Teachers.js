@@ -14,7 +14,7 @@ const NotificationSchema = new Schema({
 const TeachersSchema = new Schema({
   subjectExpertise: { type: [String], required: true },
   institution: { type: String, required: true },
-  age: { type: Number },
+  birthdate: { type: String },
   gender: { type: String },
   verificationStatus: { type: String, default: 'pending' },
   qualification: { type: String },

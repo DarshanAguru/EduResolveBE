@@ -5,7 +5,7 @@ const MentorsSchema = new Schema({
   subjectExpertise: { type: [String], required: true },
   resumeLink: { type: String, required: true },
   institution: { type: String },
-  age: { type: Number },
+  birthdate: { type: String },
   gender: { type: String },
   verificationStatus: { type: String, default: 'pending' },
   description: { type: String },

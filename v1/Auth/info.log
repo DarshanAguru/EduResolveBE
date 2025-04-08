@@ -20,3 +20,9 @@
 {"level":"info","message":"Running in production mode with clustering","service":"user-service","timestamp":"2025-04-07T16:38:14.643Z"}
 {"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-07T16:38:17.380Z"}
 {"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-07T16:38:17.380Z"}
+{"level":"info","message":"Running in production mode with clustering","service":"user-service","timestamp":"2025-04-08T17:21:23.315Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-08T17:21:25.156Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-08T17:21:25.253Z"}
+{"level":"info","message":"Running in production mode with clustering","service":"user-service","timestamp":"2025-04-08T17:22:40.826Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-08T17:22:42.394Z"}
+{"level":"info","message":"MongoDB connected successfully","service":"user-service","timestamp":"2025-04-08T17:22:42.416Z"}

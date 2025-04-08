@@ -1,17 +1,17 @@
-{
-    "localAdmin": {
+export const acl = {
+    localAdmin: {
         "/localAdmins/me": ["POST"] 
     },
-    "teacher": {
+    teacher: {
         "/teachers/me": ["POST"]
     },
-    "student": {
+    student: {
         "/students/me": ["POST"]
     },
-    "globalAdmin": {
+    globalAdmin: {
         "/globalAdmins/me": ["POST"]
     },
-    "mentor": {
+    mentor: {
         "/mentors/me": ["POST"]
     }
 }

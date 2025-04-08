@@ -52,3 +52,21 @@ export const register = async (req, res) => {
   }
 }
 
+export const storeToken = async (req, res) =>{
+  try{
+    const { token } = req.body;
+
+    res.cookie('authToken', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'Strict',
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    }
+    );
+    res.status(200).send({ message: 'Token stored successfully' });
+  }
+  catch(err){
+    logger.error("Error in storing token:", err);
+    res.status(500).send({ message: 'Internal Server Error' });
+  }
+}
